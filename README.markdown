@@ -54,12 +54,13 @@ That's a very briefly introduction, Log4Jse is so simple that you can get more i
 		var viewlogger = Logger.get("view");
 		viewlogger.debug("viewlogger out!!");
 		Logger("view").warn("hi~~");
+
 ## Contact me
 
-	>QQ: 197728786
-	
-  	>E-mail: i@ijser.cn
-  
-  	>Website: http://www.ijser.cn
+>QQ: 197728786
+
+>E-mail: i@ijser.cn
+
+>Website: http://www.ijser.cn
   
   
