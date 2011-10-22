@@ -10,7 +10,8 @@ That's a very beiefly introduction, Log4Jse is so simple that you can get more i
 </code>
 
 # Second, define logger
-<code><pre>
+<pre>
+<code>
 Logger.define = {
 	"view": { //* one logger called "view"
 		level: "debug", // output level
@@ -35,14 +36,17 @@ Logger.define = {
 		}
 	}
 }
-</pre></code>
+</code>
+</pre>
 
 # Third, use it easily
-<code><pre>
+<pre>
+<code>
 var log = Logger.get("Log4Jse");
 log.info("hello my logger!!");
 var applogger = Logger.get("app");
 applogger.warn("WARN~~~~");
 var viewlogger = Logger.get("view");
 viewlogger.debug("viewlogger out!!");
-</pre></code>
+</code>
+</pre>
