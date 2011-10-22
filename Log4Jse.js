@@ -153,7 +153,7 @@ Logger.main = function(config) {
 				level: "WARNNING"
 			}
 			output(logs,txt);
-		},
+		}
 	} 
 	//
 	return Logger.publicMethods;
