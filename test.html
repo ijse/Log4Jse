@@ -14,9 +14,19 @@
 		Logger.define = {
 			"view": {
 				level: "debug",
-				// other configurations here...
-				outway: function(prefix,msg) {
-					alert(prefix+msg);	
+				dateFormat: "yyyy-MM-dd hh:mm:ss",
+				tpl: "{TIMESTAMP},{LOGGERLEVEL}[{LOGGERNAME}]:",
+				outway: function(prefix,msg,obj) { 
+					switch(obj.level) {
+						case "ERROR":
+							console.error(prefix,msg);
+							break;
+						case "WARNNING":
+							console.warn(prefix,msg);
+							break;
+						default:
+							console.log(prefix,msg);	
+					}
 				}
 			},
 			"app": {
@@ -25,7 +35,7 @@
 				}
 			}
 		}
-		var log = Logger.getLogger("Log4Jse");
+		var log = Logger.get("Log4Jse");
 		log.info("hello my logger!!");
 		var applogger = Logger.get("app");
 		applogger.warn("WARN~~~~");

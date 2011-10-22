@@ -2,42 +2,23 @@
  * @author: ijse
  */
 
-var Logger = {};
-
+var Logger = function(loggerName) {
+	return !loggerName ? Logger.get("Log4Jse") : Logger.get(loggerName);	
+};
 
 Logger.get = function(loggerName) {
 	if(Logger.define[loggerName]) {
 		Logger.define[loggerName].name = loggerName;
 		return new Logger.main(Logger.define[loggerName]);
+	} else if (loggerName == "Log4Jse") {
+		return new Logger.main();
 	} else {
 		throw("Log4Jse: No such logger with name " + loggerName);
 	}
 }
 
-Logger.getLogger = function(args) {
-	var r = {};
-	/**
-	 * Get type of variables
-	 */
-	var getType = Logger.util.getType;
-	
-	if(getType(args) == 'string') {
-		r = { name: args }
-	} else if(getType(args) == 'object') {
-		if(!args.name)
-			r.name = "Log4Jse"
-	} else {
-		//throw("Invalid arguments!!");
-		new Logger.main("Log4Jse").error("Invalid arguments for",args);
-	}
-	return new Logger.main(r);
-}
-
-
 /**
- * @params: {
- * 		
- * }
+ * 
  */
 Logger.main = function(config) {
 	var _this = this;
@@ -47,12 +28,25 @@ Logger.main = function(config) {
 		loggerlevel: "{LOGGERLEVEL}",
 		logtext:	"{TEXT}"
 	}
+	var defaultOutway = function(prefix,msg,obj) { 
+		switch(obj.level) {
+			case "ERROR":
+				console.error(prefix,msg);
+				break;
+			case "WARNNING":
+				console.warn(prefix,msg);
+				break;
+			default:
+				console.log(prefix,msg);	
+		}
+	}
 	
-	//TODO: Deal with configures
+	// Deal with configures
 	/* Private properties */
+	config = config || {};
 	_this.name = config.name || "Log4Jse";
-	_this.outputLevel = config.level ? config.level.toUpperCase() : "INFO";
-	_this.outway = config.outway || function(prefix,msg) { console.log(prefix,msg); }
+	_this.outputLevel = config.level ? config.level.toUpperCase() : "ALL";
+	_this.outway = config.outway || defaultOutway;
 	_this.tpl = config.tpl || "{TIMESTAMP},{LOGGERLEVEL}[{LOGGERNAME}]:";
 	_this.dateFormat = config.dateFormat || "yyyy-MM-dd hh:mm:ss";
 	
@@ -76,31 +70,37 @@ Logger.main = function(config) {
 	 * Output log messages
 	 */
 	var output = function(logObj,msg) {
-		//TODO: Control the level of output log messages according to configuration
+		// Control the level of output log messages according to configuration
 		var out = _this.outway;
 		var prefix = applyData(logObj);
+		if(logObj.level == "LOG") {
+			out("",msg,logObj);
+			return ;
+		}
 		switch(_this.outputLevel) {
+			case "ALL":
 			case "DEBUG":
 				if(logObj.level == "DEBUG") {
-					out(prefix,msg); break;
+					out(prefix,msg,logObj); break;
 				}
 			case "INFO":
 				if(logObj.level == "INFO") {
-					out(prefix,msg); break;
+					out(prefix,msg,logObj); break;
 				}
 			case "WARNNING":
 				if(logObj.level == "WARNNING") {
-					out(prefix,msg); break;
+					out(prefix,msg,logObj); break;
 				}
 			case "ERROR":
 				if(logObj.level == "ERROR") {
-					out(prefix,msg); break;
+					out(prefix,msg,logObj); break;
 				}
 			case "FATAL":
 				if(logObj.level == "FATAL") {
-					out(prefix,msg); break;
+					out(prefix,msg,logObj); break;
 				}
-			case "NONE":
+			case "NONE": 
+				break;
 		}
 	}
 	
@@ -113,7 +113,7 @@ Logger.main = function(config) {
 	 * Normal Methods
 	 * 		when logger got a name
 	 */
-	var publicMethods = {
+	Logger.publicMethods = {
 		log: function(txt) {
 			var logs = {
 				timestamp: getTimestamp(),
@@ -156,12 +156,11 @@ Logger.main = function(config) {
 		},
 	} 
 	//
-	return publicMethods;
+	return Logger.publicMethods;
 };
 
 
-
-//TODO: Involved in Log4Jse
+// Involved in Log4Jse
 Logger.util = {};
 Logger.util.getType = function(t) {
 	var _t, o=t;
