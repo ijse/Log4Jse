@@ -2,47 +2,66 @@
  * @author: ijse
  */
 
+var Logger = {};
 
-/*
- *	
- *  
-	date time		{DATETIME[yyyy-MM-dd HH:mm:ss]}
-	logger name		{LOGGERNAME}
-	logger level	{LOGGERLEVEL}
-	logtext			{TEXT}
-*/
+
+Logger.get = function(loggerName) {
+	if(Logger.define[loggerName]) {
+		Logger.define[loggerName].name = loggerName;
+		return new Logger.main(Logger.define[loggerName]);
+	} else {
+		throw("Log4Jse: No such logger with name " + loggerName);
+	}
+}
+
+Logger.getLogger = function(args) {
+	var r = {};
+	/**
+	 * Get type of variables
+	 */
+	var getType = Logger.util.getType;
+	
+	if(getType(args) == 'string') {
+		r = { name: args }
+	} else if(getType(args) == 'object') {
+		if(!args.name)
+			r.name = "Log4Jse"
+	} else {
+		//throw("Invalid arguments!!");
+		new Logger.main("Log4Jse").error("Invalid arguments for",args);
+	}
+	return new Logger.main(r);
+}
+
 
 /**
  * @params: {
  * 		
  * }
  */
-var Logger = function(config) {
+Logger.main = function(config) {
 	var _this = this;
-	//TODO: Deal with configures
-	this.outway = function(log) {
-		console.log(log);
-	}
-	
-	
-	//TODO: Make a simple template engin
 	var tplArgs = {
 		timestamp: "{TIMESTAMP}",
 		loggername: "{LOGGERNAME}",
 		loggerlevel: "{LOGGERLEVEL}",
 		logtext:	"{TEXT}"
 	}
-	_this.tpl = "{TIMESTAMP},{LOGGERLEVEL} [{LOGGERNAME}]:{TEXT}";
 	
-	
+	//TODO: Deal with configures
 	/* Private properties */
-	this.name = config.name;
-	this.OutputLevel = "INFO";
+	_this.name = config.name || "Log4Jse";
+	_this.outputLevel = config.level ? config.level.toUpperCase() : "INFO";
+	_this.outway = config.outway || function(prefix,msg) { console.log(prefix,msg); }
+	_this.tpl = config.tpl || "{TIMESTAMP},{LOGGERLEVEL}[{LOGGERNAME}]:";
+	_this.dateFormat = config.dateFormat || "yyyy-MM-dd hh:mm:ss";
 	
+
 	/* Private methods */
 	
 	/**
 	 * Apply data to template
+	 * 		a simple template engine
 	 */
 	var applyData = function(data) {
 		var t = _this.tpl;
@@ -56,122 +75,114 @@ var Logger = function(config) {
 	/**
 	 * Output log messages
 	 */
-	var output = function(logObj) {
-		//TODO: control the level of output log messages according to configuration
+	var output = function(logObj,msg) {
+		//TODO: Control the level of output log messages according to configuration
 		var out = _this.outway;
-		var msg = applyData(logObj);
-		switch(_this.OutputLevel) {
+		var prefix = applyData(logObj);
+		switch(_this.outputLevel) {
 			case "DEBUG":
 				if(logObj.level == "DEBUG") {
-					out(msg); break;
+					out(prefix,msg); break;
 				}
 			case "INFO":
 				if(logObj.level == "INFO") {
-					out(msg); break;
+					out(prefix,msg); break;
 				}
 			case "WARNNING":
 				if(logObj.level == "WARNNING") {
-					out(msg); break;
+					out(prefix,msg); break;
 				}
 			case "ERROR":
 				if(logObj.level == "ERROR") {
-					out(msg); break;
+					out(prefix,msg); break;
 				}
 			case "FATAL":
 				if(logObj.level == "FATAL") {
-					out(msg); break;
+					out(prefix,msg); break;
 				}
 			case "NONE":
 		}
 	}
+	
+	var getTimestamp = function() {
+		return Logger.util.DateFormat(new Date(),_this.dateFormat);	
+	}
 	//////////////////////////////////////////////////////////////////////////////////////
 	
-	/* Static Methods */
-	//var staticMethods = {
-	Logger.prototype.getLogger = function(args) {
-			var r = {};
-			if(getType(args) == 'string') {
-				r = { name: args }
-			} else if(getType(args) == 'object') {
-				if(!args.name)
-					r.name = "Log4Jse"
-			} else {
-				//throw("Invalid arguments!!");
-				new Logger("Log4Jse").error("Invalid arguments for",args);
-			}
-			return new Logger(r);
-		}
-	//}
-
 	/**
 	 * Normal Methods
 	 * 		when logger got a name
 	 */
 	var publicMethods = {
+		log: function(txt) {
+			var logs = {
+				timestamp: getTimestamp(),
+				name: _this.name,
+				level: "LOG"
+			}
+			output(logs,txt);
+		},
 		debug: function(txt) {
-			
+			var logs = {
+				timestamp: getTimestamp(),
+				name: _this.name,
+				level: "DEBUG"
+			}
+			output(logs,txt);
 		},
 		info: function(txt) {
 			var logs = {
-				timestamp: new Date().format("yyyy-MM-dd hh:mm:ss"),
+				timestamp: getTimestamp(),
 				name: _this.name,
-				level: "INFO",
-				text: txt
+				level: "INFO"
 			}
-			output(logs);
+			output(logs,txt);
 		},
-		error: function() {
-			
+		error: function(txt) {
+			var logs = {
+				timestamp: getTimestamp(),
+				name: _this.name,
+				level: "ERROR"
+			}
+			output(logs,txt);
 		},
-		warn: function() {
-			
+		warn: function(txt) {
+			var logs = {
+				timestamp: getTimestamp(),
+				name: _this.name,
+				level: "WARNNING"
+			}
+			output(logs,txt);
 		},
-	}
-	
+	} 
 	//
-	return this.logName ? publicMethods : publicMethods;
+	return publicMethods;
 };
 
-/**
- * Get type of variables
- */
-Object.prototype.getType = function() {  
-	var _t, o=this;
-	return ((_t = typeof(o)) == "object" ? o==null && "null" ||Object.prototype.toString.call(o).slice(8,-1):_t).toLowerCase();  
+
+
+//TODO: Involved in Log4Jse
+Logger.util = {};
+Logger.util.getType = function(t) {
+	var _t, o=t;
+	return ((_t = typeof(o)) == "object" ? o==null && "null" ||Object.prototype.toString.call(o).slice(8,-1):_t).toLowerCase();
 }
-
-Logger.getLogger = function(args) {
-	var r = {};
-	if(args.getType() == 'string') {
-		r = { name: args }
-	} else if(args.getType() == 'object') {
-		if(!args.name)
-			r.name = "Log4Jse"
-	} else {
-		//throw("Invalid arguments!!");
-		new Logger("Log4Jse").error("Invalid arguments for",args);
-	}
-	return new Logger(r);
-}
-
-
-//TODO: Involved in Log4Jse 
-Date.prototype.format = function(format) {
+Logger.util.DateFormat = function(date,format) {
 	/*
 	 * eg:format="YYYY-MM-dd hh:mm:ss";
 	 */
 	var o = {
-		"M+": this.getMonth() + 1, //month
-		"d+": this.getDate(), //day
-		"h+": this.getHours(), //hour
-		"m+": this.getMinutes(), //minute
-		"s+": this.getSeconds(), //second
-		"q+": Math.floor((this.getMonth() + 3) / 3), //quarter
-		"S": this.getMilliseconds() //millisecond
+		"M+": date.getMonth() + 1, //month
+		"d+": date.getDate(), //day
+		"h+": date.getHours(), //hour
+		"m+": date.getMinutes(), //minute
+		"s+": date.getSeconds(), //second
+		"q+": Math.floor((date.getMonth() + 3) / 3), //quarter
+		"S": date.getMilliseconds() //millisecond
 	}
 
 	if(/(y+)/.test(format)) {
-		format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		format = format.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
 	}
 
 	for(var k in o) {
