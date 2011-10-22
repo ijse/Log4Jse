@@ -191,3 +191,4 @@ Logger.util.DateFormat = function(date,format) {
 	}
 	return format;
 }
+//TODO: Add pre-defined outway func
