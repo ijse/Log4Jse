@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>Log4Jse Test Case</title>
+	<script type="text/javascript" src="Log4Jse.js"></script>
+</head>
+
+<body>
+	<script type="text/javascript">
+		Logger.define = {
+			"view": {
+				level: "debug",
+				dateFormat: "yyyy-MM-dd hh:mm:ss",
+				tpl: "{TIMESTAMP},{LOGGERLEVEL}[{LOGGERNAME}]:",
+				outway: function(prefix,msg,obj) { 
+					switch(obj.level) {
+						case "ERROR":
+							console.error(prefix,msg);
+							break;
+						case "WARNNING":
+							console.warn(prefix,msg);
+							break;
+						default:
+							console.log(prefix,msg);	
+					}
+				}
+			},
+			"app": {
+				outway: function(prefix,msg) {
+					console.log(prefix,msg);
+				}
+			}
+		}
+		var log = Logger.get("Log4Jse");
+		log.info("hello my logger!!");
+		var applogger = Logger.get("app");
+		applogger.warn("WARN~~~~");
+		var viewlogger = Logger.get("view");
+		viewlogger.debug("viewlogger out!!");
+	</script>
+
+
+</body>
+</html>

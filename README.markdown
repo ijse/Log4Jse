@@ -1,0 +1,52 @@
+==Log4Jse==
+Log4Jse is a very simple easy Logger for Javascript, with only one .js file, and one global variable Logger.
+
+===Usage===
+That's a very beiefly introduction, Log4Jse is so simple that you can get more information by read it's source.
+
+# First, include Log4Jse.js file
+<code>
+<script type="text/javascript" src="Log4Jse.js"></script>
+</code>
+
+# Second, define logger
+<pre>
+<code>
+Logger.define = {
+	"view": { //* one logger called "view"
+		level: "debug", // output level
+		dateFormat: "yyyy-MM-dd hh:mm:ss", // no comment
+		tpl: "{TIMESTAMP},{LOGGERLEVEL}[{LOGGERNAME}]:", // prefix template of output text
+		outway: function(prefix,msg,obj) {  // use this for output
+			switch(obj.level) {
+				case "ERROR":
+					console.error(prefix,msg);
+					break;
+				case "WARNNING":
+					console.warn(prefix,msg);
+					break;
+				default:
+					console.log(prefix,msg);	
+			}
+		}
+	},
+	"app": { //* another logger
+		outway: function(prefix,msg) {
+			console.log(prefix,msg);
+		}
+	}
+}
+</code>
+</pre>
+
+# Third, use it easily
+<pre>
+<code>
+var log = Logger.get("Log4Jse");
+log.info("hello my logger!!");
+var applogger = Logger.get("app");
+applogger.warn("WARN~~~~");
+var viewlogger = Logger.get("view");
+viewlogger.debug("viewlogger out!!");
+</code>
+</pre>
