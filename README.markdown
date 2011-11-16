@@ -9,7 +9,7 @@ Log4Jse is a very simple and easy logger lib for Javascript, with only one .js f
 + Custom output method, you can export logs in the way you like within Js
 
 ## Usage
-That's a very briefly introduction, Log4Jse is so simple that you can get more information by read its source.
+That's a very briefly introduction, Log4Jse is so simple that you can get more information by reading its source.
 
 1. First, include Log4Jse.js file
 
