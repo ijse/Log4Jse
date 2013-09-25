@@ -1,6 +1,8 @@
 # Log4Jse
 Log4Jse is a very simple and easy logger lib for Javascript, with only one .js file(Less than 200 code lines), and one global variable `Logger`.
 
+This project aims to create a stripped version of log4j in order to get the most common used functionality from it while maintaining only the necessary source code to get this functionality working.
+
 ## Features
 + Simple, Lightweight and Easy-To-Custom
 + Similar to Log4Javascript which similar to Log4J, but more simple
