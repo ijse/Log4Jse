@@ -64,12 +64,6 @@ That's a very briefly introduction, Log4Jse is so simple that you can get more i
 		// 2011-10-22 17:20:54,ERROR[view]: I don't want work!!
 		// 2011-10-22 17:20:54,INFO[view]: Goodbye
 		
-## Contact me
 
->QQ: 197728786
-
->E-mail: i@ijser.cn
-
->Website: http://www.ijser.cn
   
   
