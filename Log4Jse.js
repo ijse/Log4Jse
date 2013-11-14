@@ -192,3 +192,7 @@ Logger.util.DateFormat = function(date,format) {
 	return format;
 }
 //TODO: Add pre-defined outway func
+
+if(module && module.exports) {
+	module.exports = Logger;
+}
