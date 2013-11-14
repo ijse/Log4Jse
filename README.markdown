@@ -67,3 +67,7 @@ That's a very briefly introduction, Log4Jse is so simple that you can get more i
 
   
   
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ijse/log4jse/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
